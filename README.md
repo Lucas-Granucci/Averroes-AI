@@ -2,6 +2,10 @@
 
 LLM-based scientific translation for low-resource languages
 
+## Data/Languages
+
+Thai, Tamil, Hebrew, Bengali
+
 ## Setup
 
 ### 1. Clone repository

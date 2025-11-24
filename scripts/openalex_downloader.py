@@ -1,4 +1,5 @@
 import os
+import time
 import requests
 import pandas as pd
 from tqdm import tqdm
@@ -48,7 +49,7 @@ class OpenAlexDownloader:
         sorted_indeces = sorted(word_indeces, key=lambda x: x[0])
         return " ".join([index[1] for index in sorted_indeces])
 
-    def download_articles(self, lang_code: str, max_articles: int) -> None:
+    def download_articles(self, lang_code: str, max_articles: int) -> pd.DataFrame:
         """Collect article URLS from OpenAlex database with valid PDFs and asbracts"""
 
         # Parameters
@@ -114,9 +115,9 @@ class OpenAlexDownloader:
             per_page = page_with_results["meta"]["per_page"]
             has_more_pages = len(results) == per_page
             reached_num_articles = total_articles >= max_articles
-
-        print(f"Collected {len(article_data)} articles")
+            time.sleep(4)
 
         article_df = pd.DataFrame(article_data)
         file_name = f"{lang_code}_article_data.csv"
         article_df.to_csv(os.path.join(self.data_dir, file_name), encoding="utf-8")
+        return article_df
