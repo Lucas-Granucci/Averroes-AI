@@ -37,7 +37,7 @@ pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu13
 ```
 
 ```bash
-pip3 install jupyter notebook ipykernel pymupdf pandas tqdm matplotlib ipython pymupdf4llm lingua-language-detector requests selenium spacy seaborn
+pip3 install jupyter notebook ipykernel pymupdf pandas tqdm matplotlib ipython pymupdf4llm lingua-language-detector requests selenium spacy seaborn openai
 ```
 
 ```bash
