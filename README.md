@@ -18,7 +18,7 @@ cd Averroes-AI
 ### 2. Activate virtual environment
 
 ```bash
-python -m venv venv
+py -3.11 -m venv venv
 ```
 
 ```bash
@@ -30,4 +30,16 @@ source venv/bin/activate   # MacOS/Linux
 
 ```bash
 pip install -r requirements.txt
+```
+
+```bash
+pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu130
+```
+
+```bash
+pip3 install jupyter notebook ipykernel pymupdf pandas tqdm matplotlib ipython pymupdf4llm lingua-language-detector requests selenium spacy seaborn
+```
+
+```bash
+python -m spacy download xx_ent_wiki_sm
 ```
