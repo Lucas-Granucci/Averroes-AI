@@ -37,9 +37,15 @@ pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu13
 ```
 
 ```bash
-pip3 install jupyter notebook ipykernel pymupdf pandas tqdm matplotlib ipython pymupdf4llm lingua-language-detector requests selenium spacy seaborn openai
+pip3 install jupyter notebook ipykernel pymupdf pandas tqdm matplotlib ipython pymupdf4llm lingua-language-detector requests selenium spacy seaborn openai python-dotenv
 ```
 
 ```bash
 python -m spacy download xx_ent_wiki_sm
+```
+
+### 4. Setup OpenAI API
+Create `.env` file and write:
+```
+OPENAI_APIKEY=your_secret_api_key_here
 ```
