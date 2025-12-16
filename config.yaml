@@ -1,0 +1,46 @@
+project:
+  seed: 42
+
+# Language configuration
+LANGUAGES:
+  ta:
+    name: "Tamil"
+    max_articles: 10
+    target_sentences: 100
+  bn:
+    name: "Bengali"
+    max_articles: 10
+    target_sentences: 100
+  th:
+    name: "Thai"
+    max_articles: 10
+    target_sentences: 100
+  sw:
+    name: "Swahili"
+    max_articles: 10
+    target_sentences: 10
+  et:
+    name: "Estonian"
+    max_articles: 10
+    target_sentences: 100
+
+# Directory structure  
+DATA_DIR: "data"
+METADATA_DIR: "data/metadata"
+PDFS_DIR: "data/pdfs"
+EXTRACTED_DIR: "data/extracted"
+SENTENCES_DIR: "data/sentences"
+API_QUERIES_DIR: "data/api_queries"
+PARALLEL_DATA_DIR: "data/parallel_data"
+RESULTS_DIR: "results"
+
+# Data processing configuration
+data_processing:
+  min_sentence_length: 10
+  max_sentence_length: 500
+  min_alphabetic_chars: 5
+
+  back_translation:
+    model: "gpt-4.1-2025-04-14"
+    system_prompt: "You are an efficient academic translator. Only respond with the translated text."
+    max_tokens: 1000
