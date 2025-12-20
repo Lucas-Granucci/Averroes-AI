@@ -90,7 +90,7 @@ def download_metadata(lang_code: str, max_articles: int, config: dict):
 
     df = pd.DataFrame(article_data)
     output_dir = config["directory"]["METADATA_DIR"]
-    metadata_path = output_dir / f"{lang_code}_article_data.csv"
+    metadata_path = f"{output_dir}/{lang_code}_article_data.csv"
     df.to_csv(metadata_path, index=False, encoding="utf-8")
     return df
 
@@ -110,5 +110,6 @@ def main():
             }
         )
 
-    print("\nMetadata Collection Summary:")
+    print("Metadata Collection Summary:")
     print(pd.DataFrame(metadata_stats))
+    print()

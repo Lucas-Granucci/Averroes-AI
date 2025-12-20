@@ -16,11 +16,12 @@ from data_pipeline import (
 
 
 def build_corpus():
+    print("Generating corpus")
     setup.main()
-    # collect_metadata.main()
-    # download_pdfs.main()
-    # convert_pdfs.main()
-    # extract_sentences.main()
+    collect_metadata.main()
+    download_pdfs.main()
+    convert_pdfs.main()
+    extract_sentences.main()
     # backtranslate.main()
     # finalize_corpus.main()
 

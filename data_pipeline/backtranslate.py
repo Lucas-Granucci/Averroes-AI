@@ -8,7 +8,7 @@ for processing, and formats the results into parallel corpus files.
 
 import os
 import json
-from pathlib import Path
+import time
 from openai import OpenAI
 from utils import load_config
 from dotenv import load_dotenv
@@ -20,8 +20,6 @@ def create_translation_prompt(sentence: str, lang_name: str) -> str:
 
 
 def create_batch_query_files(config: dict) -> None:
-    """Step 1: Create batch query files for translation."""
-
     sents_dir = config["directory"]["SENTENCES_DIR"]
     api_queries_dir = config["directory"]["API_QUERIES_DIR"]
 
@@ -31,8 +29,8 @@ def create_batch_query_files(config: dict) -> None:
     max_tokens = config["data_processing"]["back_translation"]["max_tokens"]
 
     for lang_code, lang_config in config["LANGUAGES"].items():
-        lang_sents_file = sents_dir / f"{lang_code}_sentences.jsonl"
-        lang_queries_file = api_queries_dir / f"{lang_code}_queries.jsonl"
+        lang_sents_file = f"{sents_dir}/{lang_code}_sentences.jsonl"
+        lang_queries_file = f"{api_queries_dir}/{lang_code}_queries.jsonl"
 
         with open(lang_sents_file, "r", encoding="utf-8") as file:
             lang_sents = [json.loads(line) for line in file]
@@ -68,15 +66,13 @@ def create_batch_query_files(config: dict) -> None:
 
 
 def submit_batch_jobs(config: dict, client: OpenAI) -> dict:
-    """Step 2: Submit batch jobs to OpenAI API."""
-
     api_queries_dir = config["directory"]["API_QUERIES_DIR"]
     batch_info = {}
 
-    for lang_code, lang_config in config["LANGUAGES"].items():
-        lang_queries_file = api_queries_dir / f"{lang_code}_queries.jsonl"
+    for lang_code, _ in config["LANGUAGES"].items():
+        lang_queries_file = f"{api_queries_dir}/{lang_code}_queries.jsonl"
 
-        if not lang_queries_file.exists():
+        if not os.path.exists(lang_queries_file):
             continue
 
         # Upload file
@@ -98,11 +94,9 @@ def submit_batch_jobs(config: dict, client: OpenAI) -> dict:
     return batch_info
 
 
-def check_batch_status(batch_info: dict) -> dict:
-    """Step 3: Check status of submitted batch jobs."""
-
+def check_batch_status(client: OpenAI, batch_info: dict) -> dict:
     for key, batch in batch_info.items():
-        batch = batch_info[key].client.batches.retrieve(batch.id)
+        batch = client.batches.retrieve(batch.id)
         batch_info[key] = batch
         counts = batch.request_counts
         print(
@@ -130,9 +124,9 @@ def retrieve_and_create_parallel_data(
             ]
 
     # Create parallel data files
-    for lang_code, lang_config in config["LANGUAGES"].items():
-        lang_sents_file = sents_dir / f"{lang_code}_sentences.jsonl"
-        parallel_sents_file = parallel_data_dir / f"{lang_code}-en_data.jsonl"
+    for lang_code, _ in config["LANGUAGES"].items():
+        lang_sents_file = f"{sents_dir}/{lang_code}_sentences.jsonl"
+        parallel_sents_file = f"{parallel_data_dir}/{lang_code}-en_data.jsonl"
 
         with open(lang_sents_file, "r", encoding="utf-8") as file:
             lang_sents = [json.loads(line) for line in file]
@@ -149,9 +143,9 @@ def retrieve_and_create_parallel_data(
             for res in batch_responses[lang_code]
         ]
 
-        assert len(translated_sentences) == len(
-            lang_sents
-        ), f"Mismatch: {len(translated_sentences)} translations vs {len(lang_sents)} source sentences"
+        assert len(translated_sentences) == len(lang_sents), (
+            f"Mismatch: {len(translated_sentences)} translations vs {len(lang_sents)} source sentences"
+        )
 
         # Write parallel data
         with open(parallel_sents_file, "w", encoding="utf-8") as outfile:
@@ -179,14 +173,19 @@ def retrieve_and_create_parallel_data(
 
 
 def main():
+    load_dotenv()
     config = load_config()
 
     create_batch_query_files(config)
 
-    # Initialize OpenAI client
-    load_dotenv()
     client = OpenAI(api_key=os.getenv("OPENAI_APIKEY"))
-
     batch_info = submit_batch_jobs(config, client)
-    batch_info = check_batch_status(batch_info)
+
+    done = False
+    while not done:
+        batch_info = check_batch_status(client, batch_info)
+        statuses = [batch.status for _, batch in batch_info.items()]
+        done = all(batch == "completed" for batch in statuses)
+        time.sleep(30)
+
     retrieve_and_create_parallel_data(config, client, batch_info)

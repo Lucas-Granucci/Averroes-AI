@@ -5,9 +5,10 @@ This script downloads PDF files from the URLs collected in the metadata.
 It uses Selenium WebDriver with headless Chrome to download PDFs for each language.
 """
 
+import os
 import time
-import pandas as pd
 from pathlib import Path
+import pandas as pd
 from tqdm import tqdm
 from utils import load_config
 from selenium import webdriver
@@ -15,7 +16,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-def setup_pdf_driver(download_dir: Path):
+def setup_pdf_driver(download_dir: str):
     """Configure Chrome WebDriver for PDF downloads."""
     options = Options()
     options.add_argument("--headless")
@@ -27,7 +28,9 @@ def setup_pdf_driver(download_dir: Path):
     options.add_experimental_option(
         "prefs",
         {
-            "download.default_directory": str(download_dir.absolute()),
+            "download.default_directory": os.path.abspath(
+                os.path.join(os.getcwd(), download_dir)
+            ),
             "download.prompt_for_download": False,
             "download.directory_upgrade": True,
             "plugins.always_open_pdf_externally": True,
@@ -51,13 +54,13 @@ def main():
     download_stats = []
 
     for lang_code, lang_config in config["LANGUAGES"].items():
-        lang_pdf_dir = config["directory"]["PDFS_DIR"] / lang_code
-        lang_pdf_dir.mkdir(parents=True, exist_ok=True)
+        lang_pdf_dir = f"{config['directory']['PDFS_DIR']}/{lang_code}"
+        os.makedirs(lang_pdf_dir, exist_ok=True)
 
         # Load metadata
         metadata_dir = config["directory"]["METADATA_DIR"]
-        metadata_path = metadata_dir / f"{lang_code}_article_data.csv"
-        if not metadata_path.exists():
+        metadata_path = f"{metadata_dir}/{lang_code}_article_data.csv"
+        if not os.path.exists(metadata_path):
             print(f"No metadata found for {lang_code}, skipping")
             continue
 
@@ -93,5 +96,6 @@ def main():
             }
         )
 
-    print("\nPDF Download Summary:")
+    print("PDF Download Summary:")
     print(pd.DataFrame(download_stats))
+    print()

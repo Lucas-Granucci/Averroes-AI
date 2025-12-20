@@ -6,13 +6,13 @@ It cleans and validates sentences, performs language verification,
 and saves valid sentences in JSONL format.
 """
 
+import os
 import re
 import json
 import spacy
 import pandas as pd
-from pathlib import Path
-from utils import load_config
 from tqdm import tqdm
+from utils import load_config
 from lingua import LanguageDetectorBuilder
 
 
@@ -54,24 +54,27 @@ def main():
 
     for lang_code, lang_config in config["LANGUAGES"].items():
         sents_dir = config["directory"]["SENTENCES_DIR"]
-        lang_sents_file = sents_dir / f"{lang_code}_sentences.jsonl"
-        lang_extracted_dir = config["directory"]["EXTRACTED_DIR"] / lang_code
+        lang_sents_file = f"{sents_dir}/{lang_code}_sentences.jsonl"
+        lang_extracted_dir = f"{config['directory']['EXTRACTED_DIR']}/{lang_code}"
 
-        if not lang_extracted_dir.exists():
+        if not os.path.exists(lang_extracted_dir):
             continue
 
-        markdown_files = list(lang_extracted_dir.glob("*.md"))
+        all_files = os.listdir(lang_extracted_dir)
+        markdown_files = [path for path in all_files if path.endswith(".md")]
         total_sentences = 0
 
         with open(lang_sents_file, "w", encoding="utf-8") as out_file:
-            for markdown_path in tqdm(
+            for markdown_file in tqdm(
                 markdown_files,
                 total=len(markdown_files),
                 desc=f"Extracting {lang_config['name']}",
                 bar_format=config["PROGRESS_BAR_FORMAT"],
             ):
                 try:
-                    md_text = markdown_path.read_text(encoding="utf-8")
+                    markdown_path = f"{lang_extracted_dir}/{markdown_file}"
+                    with open(markdown_path, "r", encoding="utf-8") as f:
+                        md_text = f.read()
 
                     # Clean markdown text
                     md_text = re.sub(r"```.*?```", "", md_text, flags=re.DOTALL)
@@ -97,7 +100,7 @@ def main():
                         data = {
                             "text": sentence,
                             "lang": lang_code,
-                            "doc_id": markdown_path.stem,
+                            "doc_id": markdown_file.split(".")[0],
                             "sent_id": idx,
                         }
                         out_file.write(json.dumps(data, ensure_ascii=False) + "\n")
