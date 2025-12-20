@@ -17,14 +17,14 @@ LANGUAGES:
     name: "Thai"
     max_articles: 1000
     target_sentences: 15_000
-sw:
-  name: "Swahili"
-  max_articles: 1000
-  target_sentences: 15_000
-et:
-  name: "Estonian"
-  max_articles: 1000
-  target_sentences: 15_000
+  sw:
+    name: "Swahili"
+    max_articles: 1000
+    target_sentences: 15_000
+  et:
+    name: "Estonian"
+    max_articles: 1000
+    target_sentences: 15_000
 
 # Directory structure
 directory:
