@@ -10,6 +10,7 @@ from data_pipeline import (
     convert_pdfs,
     download_pdfs,
     extract_sentences,
+    generate_statistics,
     backtranslate,
     finalize_corpus,
 )
@@ -26,5 +27,10 @@ def build_corpus():
     # finalize_corpus.main()
 
 
+def analyze():
+    generate_statistics.main()
+
+
 if __name__ == "__main__":
-    build_corpus()
+    # build_corpus()
+    analyze()

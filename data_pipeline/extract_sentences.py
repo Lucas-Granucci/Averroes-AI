@@ -63,6 +63,7 @@ def main():
         all_files = os.listdir(lang_extracted_dir)
         markdown_files = [path for path in all_files if path.endswith(".md")]
         total_sentences = 0
+        total_documents = 0
 
         with open(lang_sents_file, "w", encoding="utf-8") as out_file:
             for markdown_file in tqdm(
@@ -94,6 +95,8 @@ def main():
                         detected_code = detect_language(cleaned, detector)
                         if is_valid_sentence(cleaned) and detected_code == lang_code:
                             sentences.append(cleaned)
+                    if sentences:
+                        total_documents += 1
 
                     # Save valid sentences
                     for idx, sentence in enumerate(sentences):
@@ -119,10 +122,10 @@ def main():
             {
                 "Language": lang_config["name"],
                 "Code": lang_code,
-                "Documents": len(markdown_files),
+                "Documents": total_documents,
                 "Sentences": total_sentences,
                 "Avg per Doc": (
-                    f"{total_sentences / len(markdown_files):.1f}"
+                    f"{total_sentences / total_documents:.1f}"
                     if markdown_files
                     else "0"
                 ),

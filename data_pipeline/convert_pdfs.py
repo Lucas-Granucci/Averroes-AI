@@ -50,12 +50,17 @@ def main():
             try:
                 # Convert PDF to markdown
                 pdf_path = os.path.join(lang_pdf_dir, pdf_name)
+                if not os.path.exists(pdf_path):
+                    continue
+
                 with pymupdf.open(pdf_path) as doc:
                     md_text = pymupdf4llm.to_markdown(doc)
 
                 # Verify language
                 detected_code = detect_language(md_text, detector)
                 if detected_code == lang_code:
+                    kept_count += 1
+
                     # Rename PDF and save markdown
                     new_pdf_path = os.path.join(lang_pdf_dir, f"{kept_count}.pdf")
                     os.rename(pdf_path, new_pdf_path)
@@ -63,7 +68,6 @@ def main():
                     md_path = os.path.join(lang_extracted_dir, f"{kept_count}.md")
                     with open(md_path, "w", encoding="utf-8") as f:
                         f.write(md_text)
-                    kept_count += 1
                 else:
                     # Remove PDF if wrong language
                     os.remove(pdf_path)
