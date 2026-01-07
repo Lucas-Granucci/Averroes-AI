@@ -5,30 +5,31 @@ PROGRESS_BAR_FORMAT: "{desc:<25}{percentage:3.0f}%|{bar:20}{r_bar}"
 
 # Language configuration
 LANGUAGES:
-  # vi:
-  #   name: "Vietnamese"
-  #   max_articles: 1200
-  #   target_sentences: 10_000
+  vi:
+    name: "Vietnamese"
+    max_articles: 1200
+    target_sentences: 12_000
   ta:
     name: "Tamil"
     max_articles: 1200
-    target_sentences: 10_000
+    target_sentences: 12_000
   bn:
     name: "Bengali"
     max_articles: 1200
-    target_sentences: 10_000
+    target_sentences: 12_000
   th:
     name: "Thai"
     max_articles: 1200
-    target_sentences: 10_000
-  # sw:
-  #   name: "Swahili"
-  #   max_articles: 1200
-  #   target_sentences: 10_000
-  # et:
-  #   name: "Estonian"
-  #   max_articles: 1200
-  #   target_sentences: 10_000
+    target_sentences: 12_000
+  sw:
+    name: "Swahili"
+    max_articles: 1200
+    target_sentences: 12_000
+  et:
+    name: "Estonian"
+    max_articles: 1200
+    target_sentences: 12_000
+  
 
 # Directory structure
 directory:
@@ -49,5 +50,17 @@ data_processing:
 
   back_translation:
     model: "gpt-4.1-2025-04-14"
-    system_prompt: "You are an efficient academic translator. Only respond with the translated text."
+    system_prompt: "You are a professional translator specializing in academic and scientific texts. Translate the following text into English while:
+- Preserving technical terminology and domain-specific vocabulary
+- Maintaining the formal academic tone and style
+- Keeping the original meaning and nuance intact
+- Retaining any numbers, formulas, citations, or references exactly as written
+
+Respond only with the translated text, without explanations or notes."
     max_tokens: 1000
+
+
+  train_val_test_split:
+    train_ratio: 0.7
+    validation_ratio: 0.15
+    test_ratio: 0.15

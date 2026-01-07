@@ -7,6 +7,7 @@ keeping only those in the target language.
 """
 
 import os
+import hashlib
 import pymupdf
 import pymupdf4llm
 import pandas as pd
@@ -60,12 +61,15 @@ def main():
                 detected_code = detect_language(md_text, detector)
                 if detected_code == lang_code:
                     kept_count += 1
+                    content_hash = hashlib.md5(md_text.encode("utf-8")).hexdigest()[:8]
 
-                    # Rename PDF and save markdown
-                    new_pdf_path = os.path.join(lang_pdf_dir, f"{kept_count}.pdf")
+                    # Rename PDF and save markdown with counter + hash
+                    new_pdf_name = f"{kept_count:04d}_{content_hash}.pdf"
+                    new_pdf_path = os.path.join(lang_pdf_dir, new_pdf_name)
                     os.rename(pdf_path, new_pdf_path)
 
-                    md_path = os.path.join(lang_extracted_dir, f"{kept_count}.md")
+                    md_name = f"{kept_count:04d}_{content_hash}.md"
+                    md_path = os.path.join(lang_extracted_dir, md_name)
                     with open(md_path, "w", encoding="utf-8") as f:
                         f.write(md_text)
                 else:

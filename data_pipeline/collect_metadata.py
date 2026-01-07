@@ -83,10 +83,9 @@ def download_metadata(lang_code: str, max_articles: int, config: dict):
 
             except Exception as e:
                 print(f"Error downloading article info: {str(e)}")
-                print(f"Response: {response.json()}")
 
             params["cursor"] = next_cursor
-            time.sleep(random.randint(2, 4))
+            time.sleep(random.randint(4, 6))
 
     df = pd.DataFrame(article_data)
     output_dir = config["directory"]["METADATA_DIR"]
